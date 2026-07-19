@@ -65,7 +65,7 @@ export const Contacts = () => {
   const socialLinks = [
     { icon: <FaInstagram />, url: "https://instagram.com", label: "Instagram" },
     { icon: <FaTelegram />, url: "https://t.me", label: "Telegram" },
-    { icon: <FaWhatsapp />, url: "https://wa.me", label: "WhatsApp" },
+    { icon: <FaWhatsapp />, url: "https://vk.ru/id609435917", label: "VK" },
   ];
 
   return (
