@@ -1,60 +1,24 @@
-name: Deploy to GitHub Pages
+# Пример минимального workflow с использованием официальных actions
+name: Deploy to Pages
 
 on:
-  # Автоматический запуск при пуше в основную ветку
   push:
-    branches: [ "main", "master" ]  # Укажите вашу основную ветку
-  
-  # Ручной запуск из интерфейса GitHub
+    branches: [ main ]
   workflow_dispatch:
-    # Опционально: можно добавить параметры для ручного запуска
-    inputs:
-      environment:
-        description: 'Окружение для деплоя'
-        required: false
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - staging
-      debug:
-        description: 'Включить отладку'
-        required: false
-        default: false
-        type: boolean
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'  # Кеширование зависимостей для ускорения
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build the project
-        run: npm run build
-      
-      # Опционально: можно выводить информацию о параметрах ручного запуска
-      - name: Show deployment info
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          echo "Ручной деплой в окружение: ${{ github.event.inputs.environment }}"
-          echo "Режим отладки: ${{ github.event.inputs.debug }}"
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+          node-version: 22
+          cache: 'npm'
+      - run: npm install
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.KEY_HANDS }}
-          publish_dir: ./dist  # или ./build для Create React App
-          # Опционально: можно указать ветку для деплоя
-          publish_branch: gh-pages
-          # Опционально: сохранять историю коммитов
-          keep_files: false
+          path: ./dist   # или ./build
+      - uses: actions/deploy-pages@v4
