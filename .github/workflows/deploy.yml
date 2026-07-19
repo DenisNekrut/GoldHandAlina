@@ -1,8 +1,27 @@
 name: Deploy to GitHub Pages
 
 on:
+  # Автоматический запуск при пуше в основную ветку
   push:
-    branches: [ "main" ]  # Автоматический деплой при пуше в main
+    branches: [ "main", "master" ]  # Укажите вашу основную ветку
+  
+  # Ручной запуск из интерфейса GitHub
+  workflow_dispatch:
+    # Опционально: можно добавить параметры для ручного запуска
+    inputs:
+      environment:
+        description: 'Окружение для деплоя'
+        required: false
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      debug:
+        description: 'Включить отладку'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build-and-deploy:
@@ -15,15 +34,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'  # Кеширование зависимостей для ускорения
 
       - name: Install dependencies
         run: npm install
 
       - name: Build the project
-        run: npm run build  # Папка сборки: dist (для Vite) или build (для CRA)
+        run: npm run build
+      
+      # Опционально: можно выводить информацию о параметрах ручного запуска
+      - name: Show deployment info
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "Ручной деплой в окружение: ${{ github.event.inputs.environment }}"
+          echo "Режим отладки: ${{ github.event.inputs.debug }}"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist # Укажите вашу папку со сборкой
+          github_token: ${{ secrets.GITHUB_HANDS }}
+          publish_dir: ./dist  # или ./build для Create React App
+          # Опционально: можно указать ветку для деплоя
+          publish_branch: gh-pages
+          # Опционально: сохранять историю коммитов
+          keep_files: false
