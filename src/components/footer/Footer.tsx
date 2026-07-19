@@ -54,7 +54,7 @@ export const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          <p>© {currentYear} NailStudio. Все права защищены.</p>
+          <p>© {currentYear} GoldHands. Все права защищены.</p>
           <p className="footer-made-with">
             Сделано с <FaHeart className="heart-icon" /> для вас
           </p>
