@@ -12,6 +12,8 @@ import "./App.css";
 function App() {
   const [activeSection, setActiveSection] = useState("home");
 
+  const isDev = import.meta.env.MODE === 'development' || import.meta.env.VITE_BASE?.includes('/dev/');
+
   useEffect(() => {
     const handleScroll = () => {
       const sections = [
@@ -45,6 +47,16 @@ function App() {
 
   return (
     <div className="App">
+        {/* Добавляем плашку на время разработки */}
+      {isDev && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0,
+          background: '#ffcc00', color: '#000', padding: '5px', textAlign: 'center',
+          zIndex: 9999, fontWeight: 'bold'
+        }}>
+          🔧 ТЕСТОВАЯ ВЕРСИЯ (DEV)
+        </div>
+      )}
       <Header id={activeSection} />
       <main>
         <Hero />
