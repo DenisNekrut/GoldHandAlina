@@ -37,12 +37,12 @@ export const Hero = () => {
           </div>
           <div className="hero-stats">
             <div className="stat">
-              <span className="stat-number">5+</span>
-              <span className="stat-label">лет опыта</span>
+              <span className="stat-number">3+</span>
+              <span className="stat-label">года опыта</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat">
-              <span className="stat-number">500+</span>
+              <span className="stat-number">100+</span>
               <span className="stat-label">довольных клиентов</span>
             </div>
             <div className="stat-divider"></div>
