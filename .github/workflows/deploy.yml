@@ -52,7 +52,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_HANDS }}
+          github_token: ${{ secrets.KEY_HANDS }}
           publish_dir: ./dist  # или ./build для Create React App
           # Опционально: можно указать ветку для деплоя
           publish_branch: gh-pages
