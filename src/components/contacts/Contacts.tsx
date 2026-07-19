@@ -58,6 +58,7 @@ export const Contacts = () => {
     {
       icon: <FaClock />,
       title: "Записаться",
+      details: "Dikidi.ru",
       link: "https://dikidi.ru/1742415",
     },
   ];
@@ -137,7 +138,7 @@ export const Contacts = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="+7 (999) 123-45-67"
+                  placeholder="+7 (995) 658-96-40"
                   required
                 />
               </div>
