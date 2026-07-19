@@ -57,8 +57,8 @@ export const Contacts = () => {
     },
     {
       icon: <FaClock />,
-      title: "Часы работы",
-      details: "Пн-Сб: 10:00 - 21:00, Вс: 11:00 - 19:00",
+      title: "Записаться",
+      link: "https://dikidi.ru/1742415",
     },
   ];
 
@@ -124,7 +124,7 @@ export const Contacts = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Анна"
+                  placeholder="Алина"
                   required
                 />
               </div>
