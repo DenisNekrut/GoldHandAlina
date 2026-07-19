@@ -1,0 +1,142 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  z-index: 1000;
+  padding: 0 20px;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.logo-icon {
+  font-size: 2rem;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--secondary);
+  letter-spacing: -0.5px;
+}
+
+.logo-text span {
+  color: var(--primary);
+  font-weight: 300;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  gap: 8px;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: var(--transition);
+  border-radius: 50px;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--secondary);
+  background: var(--primary-light);
+}
+
+.nav-link.active {
+  color: var(--secondary);
+  background: var(--primary-light);
+  font-weight: 600;
+}
+
+.burger-menu {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.burger-line {
+  display: block;
+  width: 28px;
+  height: 2.5px;
+  background: var(--secondary);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+.burger-line.open:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.burger-line.open:nth-child(2) {
+  opacity: 0;
+}
+
+.burger-line.open:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+@media (max-width: 768px) {
+  .burger-menu {
+    display: flex;
+  }
+
+  .nav {
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-120%);
+    opacity: 0;
+    transition: var(--transition);
+    border-radius: 0 0 20px 20px;
+  }
+
+  .nav.open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .nav-list {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nav-link {
+    padding: 12px 24px;
+    width: 100%;
+    text-align: center;
+    font-size: 1.05rem;
+  }
+}
