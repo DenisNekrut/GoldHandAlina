@@ -35,7 +35,7 @@ export const Header = ({ id }: PropsActiveSection) => {
     <header className="header">
       <div className="header-container">
         <div className="logo" onClick={() => scrollToSection("home")}>
-          <span className="logo-icon"><img src="logo200.png" alt="Логотип студии" style="height: 40px;"></span>
+          <span className="logo-icon"></span>
           <span className="logo-text">
             Gold<span>Hands</span>
           </span>
