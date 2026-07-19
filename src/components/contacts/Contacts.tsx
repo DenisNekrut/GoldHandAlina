@@ -41,18 +41,18 @@ export const Contacts = () => {
     {
       icon: <FaMapMarkerAlt />,
       title: "Адрес",
-      details: "г. Москва, ул. Цветная, д. 15, студия 4",
+      details: "г. Москва, г. Троицк, ул. Новая, д. 2, студия 31",
     },
     {
       icon: <FaPhone />,
       title: "Телефон",
-      details: "+7 (999) 123-45-67",
-      link: "tel:+79991234567",
+      details: "+7 (995) 658-96-40",
+      link: "tel:+79956589640",
     },
     {
       icon: <FaEnvelope />,
       title: "Email",
-      details: "anna.nail@studio.ru",
+      details: "alina_nekrut1701@mail.ru",
       link: "mailto:anna.nail@studio.ru",
     },
     {
