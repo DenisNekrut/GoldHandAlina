@@ -32,7 +32,16 @@ export const Portfolio = () => {
           {filteredWorks.map((work) => (
             <div key={work.id} className="portfolio-item">
               <div className="portfolio-placeholder">
-                <span>{work.emoji}</span>
+                {work.imageUrl ? (
+                  <img
+                    src={work.imageUrl}
+                    alt={work.title}
+                    className="portfolio-work-img"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span>{work.emoji || "✨"}</span>
+                )}
               </div>
               <div className="portfolio-overlay">
                 <h4>{work.title}</h4>

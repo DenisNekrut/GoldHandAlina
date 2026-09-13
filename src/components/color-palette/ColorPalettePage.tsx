@@ -11,12 +11,13 @@ import {
   Layers,
   Cloud,
 } from "lucide-react";
+import { useSiteContent } from "../../context";
 import { ColorCard } from "./ColorCard";
 import { ColorDetailModal } from "./ColorDetailModal";
 import { AddColorModal } from "./AddColorModal";
 import { StorageGuideModal } from "./StorageGuideModal";
 import { colorService } from "./colorService";
-import type { ColorCategory, NailColor, NewNailColorInput } from "./types";
+import type { NailColor, NewNailColorInput } from "./types";
 import "./ColorPalette.css";
 
 interface ColorPalettePageProps {
@@ -28,9 +29,12 @@ export const ColorPalettePage = ({
   onBackToHome,
   onSelectColorForBooking,
 }: ColorPalettePageProps) => {
+  const { content } = useSiteContent();
+  const paletteContent = content.palette;
+
   const [colors, setColors] = useState<NailColor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<ColorCategory>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"split" | "toggle" | "slider">("split");
 
@@ -84,14 +88,16 @@ export const ColorPalettePage = ({
     }
   };
 
-  const categories: { id: ColorCategory; label: string; icon?: string }[] = [
-    { id: "all", label: "Все цвета" },
-    { id: "nude", label: "Нюд и молочные" },
-    { id: "red", label: "Красные и винные" },
-    { id: "dark", label: "Глубокие темные" },
-    { id: "pastel", label: "Нежная пастель" },
-    { id: "glitter", label: "Шиммер и блеск" },
-  ];
+  const categories = paletteContent.categories && paletteContent.categories.length > 0
+    ? paletteContent.categories
+    : [
+        { id: "all", label: "Все цвета" },
+        { id: "nude", label: "Нюд и молочные" },
+        { id: "red", label: "Красные и винные" },
+        { id: "dark", label: "Глубокие темные" },
+        { id: "pastel", label: "Нежная пастель" },
+        { id: "glitter", label: "Шиммер и блеск" },
+      ];
 
   // Фильтрация
   const filteredColors = useMemo(() => {
@@ -120,7 +126,7 @@ export const ColorPalettePage = ({
             onClick={onBackToHome}
           >
             <ArrowLeft size={18} />
-            <span>← Вернуться на главную</span>
+            <span>← {paletteContent.backButtonText || "Вернуться на главную"}</span>
           </button>
 
           <div className="top-bar-right-actions">
@@ -162,12 +168,12 @@ export const ColorPalettePage = ({
         <div className="container">
           <div className="palette-hero-badge">
             <Sparkles size={16} />
-            <span>Интерактивный каталог оттенков</span>
+            <span>{paletteContent.badge || "Интерактивный каталог оттенков"}</span>
           </div>
-          <h1 className="palette-title">Цвет лака & Готовый маникюр</h1>
+          <h1 className="palette-title">{paletteContent.title || "Цвет лака & Готовый маникюр"}</h1>
           <p className="palette-subtitle">
-            Больше никаких сомнений перед покрытием! Каждая карточка показывает сразу два фото:
-            точный оттенок гель-лака и как этот цвет выглядит на реальных ногтях.
+            {paletteContent.subtitle ||
+              "Больше никаких сомнений перед покрытием! Каждая карточка показывает сразу два фото: точный оттенок гель-лака и как этот цвет выглядит на реальных ногтях."}
           </p>
         </div>
       </div>
@@ -181,7 +187,7 @@ export const ColorPalettePage = ({
               <Search size={18} className="search-icon" />
               <input
                 type="text"
-                placeholder="Поиск по названию или коду оттенка (#104, Luxio...)"
+                placeholder={paletteContent.searchPlaceholder || "Поиск по названию или коду оттенка (#104, Luxio...)"}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -198,7 +204,7 @@ export const ColorPalettePage = ({
 
             {/* Переключатель вида карточек */}
             <div className="view-mode-selector">
-              <span className="view-mode-label">Вид фото:</span>
+              <span className="view-mode-label">{paletteContent.viewModeLabel || "Вид фото:"}</span>
               <div className="view-mode-buttons">
                 <button
                   type="button"
@@ -207,7 +213,7 @@ export const ColorPalettePage = ({
                   title="50/50 оба фото рядом"
                 >
                   <Columns size={16} />
-                  <span>50/50 Вместе</span>
+                  <span>{paletteContent.viewModeSplitText || "50/50 Вместе"}</span>
                 </button>
                 <button
                   type="button"
@@ -216,7 +222,7 @@ export const ColorPalettePage = ({
                   title="Переключение Цвет ↔ Маникюр"
                 >
                   <Layers size={16} />
-                  <span>Вкладки</span>
+                  <span>{paletteContent.viewModeToggleText || "Вкладки"}</span>
                 </button>
                 <button
                   type="button"
@@ -225,7 +231,7 @@ export const ColorPalettePage = ({
                   title="Слайдер сравнения До/После"
                 >
                   <SlidersHorizontal size={16} />
-                  <span>Слайдер</span>
+                  <span>{paletteContent.viewModeSliderText || "Слайдер"}</span>
                 </button>
               </div>
             </div>
@@ -273,9 +279,17 @@ export const ColorPalettePage = ({
             </div>
           ) : filteredColors.length === 0 ? (
             <div className="palette-empty-state">
-              <div className="empty-icon">🎨</div>
-              <h3>По вашему запросу ничего не найдено</h3>
-              <p>Попробуйте изменить категорию или очистить поисковый запрос.</p>
+              {paletteContent.emptyImageUrl ? (
+                <img
+                  src={paletteContent.emptyImageUrl}
+                  alt="Empty"
+                  className="w-16 h-16 object-contain mb-3 mx-auto"
+                />
+              ) : (
+                <div className="empty-icon">{paletteContent.emptyEmoji || "🎨"}</div>
+              )}
+              <h3>{paletteContent.emptyTitle || "По вашему запросу ничего не найдено"}</h3>
+              <p>{paletteContent.emptySubtitle || "Попробуйте изменить категорию или очистить поисковый запрос."}</p>
               <button
                 type="button"
                 className="btn-clear-filters"
@@ -284,7 +298,7 @@ export const ColorPalettePage = ({
                   setSearchQuery("");
                 }}
               >
-                Показать все оттенки
+                {paletteContent.emptyButtonText || "Показать все оттенки"}
               </button>
             </div>
           ) : (
@@ -296,6 +310,7 @@ export const ColorPalettePage = ({
                   viewMode={viewMode}
                   onSelect={(c) => setSelectedColorForDetail(c)}
                   onBookWithColor={handleBookColor}
+                  bookButtonText={paletteContent.bookButtonText}
                 />
               ))}
             </div>

@@ -27,6 +27,15 @@
   box-shadow: 0 20px 60px rgba(212, 160, 160, 0.2);
 }
 
+.about-photo-img {
+  width: 360px;
+  height: 440px;
+  object-fit: cover;
+  border-radius: 30px;
+  box-shadow: 0 20px 60px rgba(212, 160, 160, 0.25);
+  display: block;
+}
+
 .about-text {
   font-size: 1.05rem;
   color: var(--text-light);

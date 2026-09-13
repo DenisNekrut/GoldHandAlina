@@ -1,4 +1,5 @@
 import { FaHeart, FaLock } from "react-icons/fa";
+import { useSiteContent } from "../../context";
 import "./Footer.css";
 
 interface FooterProps {
@@ -6,6 +7,7 @@ interface FooterProps {
 }
 
 export const Footer = ({ onNavigate }: FooterProps) => {
+  const { content } = useSiteContent();
   const currentYear = new Date().getFullYear();
 
   const handleLinkClick = (e: React.MouseEvent, page: "home" | "palette" | "admin", sectionId?: string) => {
@@ -20,7 +22,18 @@ export const Footer = ({ onNavigate }: FooterProps) => {
       <div className="footer-container">
         <div className="footer-content">
           <div className="footer-brand">
-            <span className="footer-logo">💅 GoldHands</span>
+            <span className="footer-logo">
+              {content.general.logoImageUrl ? (
+                <img
+                  src={content.general.logoImageUrl}
+                  alt="Logo"
+                  className="footer-logo-img"
+                />
+              ) : (
+                "💅 "
+              )}
+              {content.general.brandNamePart1 || "Gold"}{content.general.brandNamePart2 || "Hands"}
+            </span>
             <p className="footer-description">
               Профессиональный маникюр и педикюр с любовью к деталям. Создаём
               красоту вместе!
@@ -71,14 +84,14 @@ export const Footer = ({ onNavigate }: FooterProps) => {
 
         <div className="footer-bottom">
           <p>© {currentYear} GoldHands. Все права защищены.</p>
-          <div className="flex items-center gap-4">
+          <div className="footer-bottom-actions">
             <button
               type="button"
               onClick={(e) => handleLinkClick(e, "admin")}
-              className="text-xs text-stone-400 hover:text-stone-600 transition-colors flex items-center gap-1.5 cursor-pointer bg-transparent border-none p-0"
+              className="footer-admin-link"
               title="Панель управления сайтом (/admin)"
             >
-              <FaLock size={11} />
+              <FaLock size={12} />
               <span>Панель мастера</span>
             </button>
             <p className="footer-made-with">
@@ -90,5 +103,6 @@ export const Footer = ({ onNavigate }: FooterProps) => {
     </footer>
   );
 };
+
 
 

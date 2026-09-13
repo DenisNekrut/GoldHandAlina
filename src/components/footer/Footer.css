@@ -22,8 +22,18 @@
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--white);
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 12px;
+}
+
+.footer-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .footer-description {
@@ -80,6 +90,32 @@
   padding: 20px 0;
   font-size: 0.85rem;
   color: #b8a0a0;
+}
+
+.footer-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-admin-link {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #b8a0a0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+
+.footer-admin-link:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .heart-icon {

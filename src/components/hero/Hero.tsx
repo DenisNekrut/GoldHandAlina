@@ -81,9 +81,18 @@ export const Hero = ({ onOpenPalette }: HeroProps) => {
           </div>
         </div>
         <div className="hero-image">
-          <div className="hero-image-placeholder">
-            <span>{hero.avatarEmoji || "💅"}</span>
-          </div>
+          {hero.avatarUrl ? (
+            <img
+              src={hero.avatarUrl}
+              alt={`${hero.titleLine1} ${hero.titleLine2}`}
+              className="hero-photo-img"
+              loading="eager"
+            />
+          ) : (
+            <div className="hero-image-placeholder">
+              <span>{hero.avatarEmoji || "💅"}</span>
+            </div>
+          )}
         </div>
       </div>
     </section>

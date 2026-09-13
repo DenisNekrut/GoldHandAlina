@@ -206,6 +206,32 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
       },
     ],
   },
+  palette: {
+    badge: "Интерактивный каталог оттенков",
+    title: "Цвет лака & Готовый маникюр",
+    subtitle:
+      "Больше никаких сомнений перед покрытием! Каждая карточка показывает сразу два фото: точный оттенок гель-лака и как этот цвет выглядит на реальных ногтях.",
+    backButtonText: "Вернуться на главную",
+    searchPlaceholder: "Поиск по названию или коду оттенка (#104, Luxio...)",
+    categories: [
+      { id: "all", label: "Все цвета" },
+      { id: "nude", label: "Нюд и молочные" },
+      { id: "red", label: "Красные и винные" },
+      { id: "dark", label: "Глубокие темные" },
+      { id: "pastel", label: "Нежная пастель" },
+      { id: "glitter", label: "Шиммер и блеск" },
+    ],
+    viewModeLabel: "Вид фото:",
+    viewModeSplitText: "50/50 Вместе",
+    viewModeToggleText: "Вкладки",
+    viewModeSliderText: "Слайдер",
+    bookButtonText: "Хочу этот цвет",
+    emptyTitle: "По вашему запросу ничего не найдено",
+    emptySubtitle: "Попробуйте изменить категорию или очистить поисковый запрос.",
+    emptyButtonText: "Показать все оттенки",
+    emptyImageUrl: "",
+    emptyEmoji: "🎨",
+  },
 };
 
 // Проверка локального кэша
@@ -221,6 +247,10 @@ function getLocalContent(): SiteContent | null {
           general: {
             ...DEFAULT_SITE_CONTENT.general,
             ...(parsed.general || {}),
+          },
+          palette: {
+            ...DEFAULT_SITE_CONTENT.palette,
+            ...(parsed.palette || {}),
           },
         };
       }
@@ -266,6 +296,10 @@ export const siteContentService = {
             ...DEFAULT_SITE_CONTENT.general,
             ...(remoteContent.general || {}),
           },
+          palette: {
+            ...DEFAULT_SITE_CONTENT.palette,
+            ...(remoteContent.palette || {}),
+          },
         };
         saveLocalContent(merged);
         return merged;
@@ -288,6 +322,10 @@ export const siteContentService = {
               general: {
                 ...DEFAULT_SITE_CONTENT.general,
                 ...(parsed.general || {}),
+              },
+              palette: {
+                ...DEFAULT_SITE_CONTENT.palette,
+                ...(parsed.palette || {}),
               },
             };
             saveLocalContent(merged);

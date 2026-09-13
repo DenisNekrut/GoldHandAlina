@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Lock } from "lucide-react";
+import { useSiteContent } from "../../context";
 import "./Header.css";
 
 interface HeaderProps {
@@ -9,6 +10,7 @@ interface HeaderProps {
 }
 
 export const Header = ({ id, activePage = "home", onNavigate }: HeaderProps) => {
+  const { content } = useSiteContent();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
@@ -55,9 +57,18 @@ export const Header = ({ id, activePage = "home", onNavigate }: HeaderProps) => 
     <header className="header">
       <div className="header-container">
         <div className="logo" onClick={() => handleNavClick("home")}>
-          <span className="logo-icon">💅</span>
+          {content.general.logoImageUrl ? (
+            <img
+              src={content.general.logoImageUrl}
+              alt="Logo"
+              className="logo-photo-img"
+            />
+          ) : (
+            <span className="logo-icon">💅</span>
+          )}
           <span className="logo-text">
-            Gold<span>Hands</span>
+            {content.general.brandNamePart1 || "Gold"}
+            <span>{content.general.brandNamePart2 || "Hands"}</span>
           </span>
         </div>
 
@@ -93,16 +104,9 @@ export const Header = ({ id, activePage = "home", onNavigate }: HeaderProps) => 
             {/* Вход в панель управления для мастера */}
             <li>
               <button
-                className={`nav-link ${activePage === "admin" ? "active" : ""}`}
+                className={`nav-link admin-nav-btn ${activePage === "admin" ? "active" : ""}`}
                 onClick={handleAdminClick}
                 title="Панель управления сайтом /admin"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  fontSize: "13px",
-                  opacity: 0.85
-                }}
               >
                 <Lock size={14} />
                 <span>Админка</span>
@@ -124,5 +128,6 @@ export const Header = ({ id, activePage = "home", onNavigate }: HeaderProps) => 
     </header>
   );
 };
+
 
 

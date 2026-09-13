@@ -30,6 +30,14 @@
   font-size: 2rem;
 }
 
+.logo-photo-img {
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--primary-light);
+}
+
 .logo-text {
   font-size: 1.5rem;
   font-weight: 700;
@@ -45,20 +53,30 @@
 .nav-list {
   display: flex;
   list-style: none;
-  gap: 8px;
+  gap: 6px;
+  align-items: center;
 }
 
 .nav-link {
   background: none;
   border: none;
-  padding: 8px 18px;
-  font-size: 0.95rem;
+  padding: 8px 14px;
+  font-size: 0.92rem;
   font-weight: 500;
   color: var(--text-light);
   cursor: pointer;
   transition: var(--transition);
   border-radius: 50px;
   position: relative;
+  white-space: nowrap;
+}
+
+.admin-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.88rem;
+  opacity: 0.85;
 }
 
 .nav-link:hover {

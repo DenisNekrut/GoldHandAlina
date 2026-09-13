@@ -30,6 +30,7 @@ import { colorService } from "../color-palette/colorService";
 import type { NailColor } from "../color-palette/types";
 import { AddColorModal } from "../color-palette/AddColorModal";
 import { AdminAuthModal } from "./AdminAuthModal";
+import { AdminImageUploadField } from "./AdminImageUploadField";
 import "./Admin.css";
 
 interface AdminPageProps {
@@ -40,6 +41,7 @@ type TabType = "hero" | "services" | "portfolio" | "about" | "reviews" | "contac
 
 export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
   const [activeTab, setActiveTab] = useState<TabType>("hero");
+  const [paletteSubTab, setPaletteSubTab] = useState<"content" | "colors">("content");
   const [content, setContent] = useState<SiteContent | null>(null);
   const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [authChecking, setAuthChecking] = useState(true);
@@ -178,6 +180,42 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
       contacts: { ...content.contacts, [field]: value },
     });
     setHasChanges(true);
+  };
+
+  const updatePalette = <K extends keyof SiteContent["palette"]>(
+    field: K,
+    value: SiteContent["palette"][K]
+  ) => {
+    if (!content) return;
+    setContent({
+      ...content,
+      palette: {
+        ...content.palette,
+        [field]: value,
+      },
+    });
+    setHasChanges(true);
+  };
+
+  const handleAddPaletteCategory = () => {
+    if (!content) return;
+    const cats = content.palette?.categories ? [...content.palette.categories] : [];
+    const newId = `cat_${Date.now()}`;
+    cats.push({ id: newId, label: "Новая категория" });
+    updatePalette("categories", cats);
+  };
+
+  const handleUpdatePaletteCategory = (index: number, label: string) => {
+    if (!content) return;
+    const cats = [...(content.palette?.categories || [])];
+    cats[index] = { ...cats[index], label };
+    updatePalette("categories", cats);
+  };
+
+  const handleDeletePaletteCategory = (index: number) => {
+    if (!content) return;
+    const cats = (content.palette?.categories || []).filter((_, i) => i !== index);
+    updatePalette("categories", cats);
   };
 
   // Услуги (Services)
@@ -631,12 +669,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
               </div>
 
               <div className="admin-field">
-                <label>Эмодзи или иконка аватара</label>
+                <label>Эмодзи или иконка аватара (запасной)</label>
                 <input
                   type="text"
                   className="admin-input"
                   value={content.hero.avatarEmoji}
                   onChange={(e) => updateHero("avatarEmoji", e.target.value)}
+                />
+              </div>
+
+              <div className="admin-field full-width">
+                <AdminImageUploadField
+                  label="Главное фото мастера / маникюра (вместо смайлика)"
+                  value={content.hero.avatarUrl}
+                  onChange={(url) => updateHero("avatarUrl", url)}
+                  fallbackEmoji={content.hero.avatarEmoji || "💅"}
+                  aspectRatio="portrait"
+                  hint="Загрузите красивую фотографию мастера или эффектного маникюра. Если фото отсутствует, будет показан смайлик выше."
                 />
               </div>
 
@@ -797,7 +846,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
                       />
                     </div>
                     <div className="admin-field">
-                      <label>Тип иконки</label>
+                      <label>Тип иконки (если нет фото)</label>
                       <select
                         className="admin-select"
                         value={service.icon}
@@ -808,6 +857,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
                         <option value="magic">Магия (FaMagic)</option>
                         <option value="spa">SPA (FaSpa)</option>
                       </select>
+                    </div>
+                    <div className="admin-field full-width">
+                      <AdminImageUploadField
+                        label="Фотография услуги (по желанию вместо иконки)"
+                        value={service.imageUrl}
+                        onChange={(url) => handleUpdateService(index, "imageUrl", url)}
+                        aspectRatio="square"
+                        hint="Если загрузить реальное фото процедуры, оно заменит иконку на сайте."
+                      />
                     </div>
                     <div className="admin-field full-width">
                       <label>Описание процедуры</label>
@@ -915,12 +973,22 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
                       </select>
                     </div>
                     <div className="admin-field">
-                      <label>Эмодзи или значок</label>
+                      <label>Эмодзи или значок (запасной)</label>
                       <input
                         type="text"
                         className="admin-input"
                         value={item.emoji}
                         onChange={(e) => handleUpdatePortfolioItem(index, "emoji", e.target.value)}
+                      />
+                    </div>
+                    <div className="admin-field full-width">
+                      <AdminImageUploadField
+                        label="Фотография работы (вместо смайлика)"
+                        value={item.imageUrl}
+                        onChange={(url) => handleUpdatePortfolioItem(index, "imageUrl", url)}
+                        fallbackEmoji={item.emoji || "💅"}
+                        aspectRatio="square"
+                        hint="Загрузите качественное фото готового маникюра для галереи."
                       />
                     </div>
                   </div>
@@ -972,12 +1040,23 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
               </div>
 
               <div className="admin-field">
-                <label>Эмодзи аватара мастера</label>
+                <label>Эмодзи аватара мастера (запасной)</label>
                 <input
                   type="text"
                   className="admin-input"
                   value={content.about.avatarEmoji}
                   onChange={(e) => updateAbout("avatarEmoji", e.target.value)}
+                />
+              </div>
+
+              <div className="admin-field full-width">
+                <AdminImageUploadField
+                  label="Портретное фото мастера (вместо смайлика)"
+                  value={content.about.avatarUrl}
+                  onChange={(url) => updateAbout("avatarUrl", url)}
+                  fallbackEmoji={content.about.avatarEmoji || "👩‍🎨"}
+                  aspectRatio="portrait"
+                  hint="Большая вертикальная фотография мастера в блоке «Обо мне»."
                 />
               </div>
             </div>
@@ -1248,88 +1327,353 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
           </div>
         )}
 
-        {/* Вкладка 7: Палитра оттенков (Nail Colors) */}
+        {/* Вкладка 7: Палитра цветов (Color Palette) */}
         {activeTab === "palette" && (
           <div className="admin-card">
             <div className="admin-card-header">
               <div>
-                <h2 className="admin-card-title">Палитра оттенков лака ({colors.length})</h2>
+                <h2 className="admin-card-title">Палитра цветов</h2>
                 <p className="admin-card-desc">
-                  Управление базой оттенков в Supabase: свотчи, готовый маникюр и описания
+                  Управление оформлением страницы каталога лаков и базой оттенков в Supabase
                 </p>
               </div>
+              {paletteSubTab === "colors" && (
+                <button
+                  type="button"
+                  className="admin-btn primary"
+                  onClick={() => setIsAddColorOpen(true)}
+                >
+                  <Plus size={16} />
+                  <span>Добавить оттенок</span>
+                </button>
+              )}
+            </div>
+
+            {/* Внутренние подвкладки */}
+            <div className="flex items-center gap-2 mb-6 border-b border-stone-200 pb-3">
               <button
                 type="button"
-                className="admin-btn primary"
-                onClick={() => setIsAddColorOpen(true)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  paletteSubTab === "content"
+                    ? "bg-[#c59b6d] text-white shadow-sm"
+                    : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                }`}
+                onClick={() => setPaletteSubTab("content")}
               >
-                <Plus size={16} />
-                <span>Добавить оттенок</span>
+                📝 Тексты и оформление страницы
+              </button>
+              <button
+                type="button"
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                  paletteSubTab === "colors"
+                    ? "bg-[#c59b6d] text-white shadow-sm"
+                    : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                }`}
+                onClick={() => setPaletteSubTab("colors")}
+              >
+                💅 База оттенков лака ({colors.length})
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {colors.map((color) => (
-                <div
-                  key={color.id}
-                  className="border border-stone-200 rounded-xl p-4 bg-white shadow-sm flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-sm text-stone-800">{color.title}</span>
-                      <span className="text-xs px-2 py-0.5 rounded font-mono bg-stone-100 text-stone-700 border border-stone-200">
-                        {color.shade_code || "—"}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 mb-3">
-                      <div
-                        className="w-5 h-5 rounded-full border border-stone-300 shadow-inner"
-                        style={{ backgroundColor: color.color_hex || "#ccc" }}
+            {paletteSubTab === "content" && (
+              <div className="space-y-8">
+                {/* 1. Шапка страницы */}
+                <div>
+                  <h3 className="text-base font-bold text-stone-800 mb-3 flex items-center gap-2">
+                    <span>1. Главная шапка страницы (Hero / Заголовок)</span>
+                  </h3>
+                  <div className="admin-form-grid">
+                    <div className="admin-field">
+                      <label>Текст бейджа (над заголовком)</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.badge || ""}
+                        onChange={(e) => updatePalette("badge", e.target.value)}
+                        placeholder="Каталог оттенков 2026"
                       />
-                      <span className="text-xs text-stone-500 font-medium">
-                        {color.brand || "Без бренда"} • {color.finish || "glossy"}
-                      </span>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div className="text-center">
-                        <img
-                          src={colorService.resolveImageUrl(color.swatch_image_url)}
-                          alt="Свотч"
-                          className="w-full h-24 object-cover rounded-lg border border-stone-200"
-                        />
-                        <span className="text-[10px] text-stone-500 mt-1 block">Образец</span>
-                      </div>
-                      <div className="text-center">
-                        <img
-                          src={colorService.resolveImageUrl(color.manicure_image_url)}
-                          alt="Маникюр"
-                          className="w-full h-24 object-cover rounded-lg border border-stone-200"
-                        />
-                        <span className="text-[10px] text-stone-500 mt-1 block">На ногтях</span>
-                      </div>
+                    <div className="admin-field">
+                      <label>Текст кнопки возврата</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.backButtonText || ""}
+                        onChange={(e) => updatePalette("backButtonText", e.target.value)}
+                        placeholder="← На главную"
+                      />
                     </div>
-
-                    <p className="text-xs text-stone-600 line-clamp-2 mb-3">
-                      {color.description}
-                    </p>
-                  </div>
-
-                  <div className="pt-2 border-t border-stone-100 flex items-center justify-between">
-                    <span className="text-[11px] text-stone-400">ID: {color.id}</span>
-                    <button
-                      type="button"
-                      className="text-red-600 hover:text-red-700 text-xs font-semibold flex items-center gap-1 p-1"
-                      onClick={() => handleDeleteColor(color.id, color.title)}
-                    >
-                      <Trash2 size={13} />
-                      <span>Удалить</span>
-                    </button>
+                    <div className="admin-field full-width">
+                      <label>Главный заголовок страницы</label>
+                      <input
+                        type="text"
+                        className="admin-input font-medium"
+                        value={content.palette?.title || ""}
+                        onChange={(e) => updatePalette("title", e.target.value)}
+                        placeholder="Палитра гель-лаков"
+                      />
+                    </div>
+                    <div className="admin-field full-width">
+                      <label>Подзаголовок и описание страницы</label>
+                      <textarea
+                        className="admin-textarea"
+                        value={content.palette?.subtitle || ""}
+                        onChange={(e) => updatePalette("subtitle", e.target.value)}
+                        placeholder="Сравните свотч лака и готовый маникюр на ногтях перед визитом к мастеру"
+                      />
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* 2. Поиск и режимы просмотра */}
+                <div className="pt-6 border-t border-stone-200">
+                  <h3 className="text-base font-bold text-stone-800 mb-3">
+                    2. Поиск и переключатель режимов
+                  </h3>
+                  <div className="admin-form-grid">
+                    <div className="admin-field">
+                      <label>Подсказка в строке поиска</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.searchPlaceholder || ""}
+                        onChange={(e) => updatePalette("searchPlaceholder", e.target.value)}
+                        placeholder="Поиск по названию, номеру или бренду..."
+                      />
+                    </div>
+                    <div className="admin-field">
+                      <label>Надпись переключателя режимов</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.viewModeLabel || ""}
+                        onChange={(e) => updatePalette("viewModeLabel", e.target.value)}
+                        placeholder="Режим:"
+                      />
+                    </div>
+                    <div className="admin-field">
+                      <label>Режим: Кнопка «50/50 Вместе»</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.viewModeSplitText || ""}
+                        onChange={(e) => updatePalette("viewModeSplitText", e.target.value)}
+                        placeholder="50/50 Вместе"
+                      />
+                    </div>
+                    <div className="admin-field">
+                      <label>Режим: Кнопка «Вкладки»</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.viewModeToggleText || ""}
+                        onChange={(e) => updatePalette("viewModeToggleText", e.target.value)}
+                        placeholder="Вкладки"
+                      />
+                    </div>
+                    <div className="admin-field">
+                      <label>Режим: Кнопка «Интерактивный слайдер»</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.viewModeSliderText || ""}
+                        onChange={(e) => updatePalette("viewModeSliderText", e.target.value)}
+                        placeholder="Слайдер"
+                      />
+                    </div>
+                    <div className="admin-field">
+                      <label>Текст кнопки записи в карточке цвета</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.bookButtonText || ""}
+                        onChange={(e) => updatePalette("bookButtonText", e.target.value)}
+                        placeholder="Хочу этот цвет"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Категории оттенков (фильтры) */}
+                <div className="pt-6 border-t border-stone-200">
+                  <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                    <div>
+                      <h3 className="text-base font-bold text-stone-800">
+                        3. Фильтры и категории палитры
+                      </h3>
+                      <p className="text-xs text-stone-500">
+                        Категории для быстрого поиска нужного оттенка (Нюдовые, Классика, Яркие и др.)
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="admin-btn secondary"
+                      onClick={handleAddPaletteCategory}
+                    >
+                      <Plus size={16} />
+                      <span>Добавить категорию</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {(content.palette?.categories || []).map((cat, idx) => (
+                      <div
+                        key={cat.id || idx}
+                        className="flex items-center gap-2 p-3 bg-stone-50 border border-stone-200 rounded-xl"
+                      >
+                        <div className="flex-1">
+                          <label className="text-[11px] font-semibold text-stone-500 block mb-1">
+                            ID: <span className="font-mono text-stone-700">{cat.id}</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="admin-input text-sm py-1.5"
+                            value={cat.label}
+                            onChange={(e) => handleUpdatePaletteCategory(idx, e.target.value)}
+                          />
+                        </div>
+                        {cat.id !== "all" && (
+                          <button
+                            type="button"
+                            className="admin-btn danger icon-only mt-4"
+                            onClick={() => handleDeletePaletteCategory(idx)}
+                            title="Удалить категорию"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 4. Блок «Ничего не найдено» */}
+                <div className="pt-6 border-t border-stone-200">
+                  <h3 className="text-base font-bold text-stone-800 mb-3">
+                    4. Состояние «Ничего не найдено» (Пустая выдача)
+                  </h3>
+                  <div className="admin-form-grid">
+                    <div className="admin-field">
+                      <label>Заголовок пустой выдачи</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.emptyTitle || ""}
+                        onChange={(e) => updatePalette("emptyTitle", e.target.value)}
+                        placeholder="По вашему запросу ничего не найдено"
+                      />
+                    </div>
+                    <div className="admin-field">
+                      <label>Текст кнопки сброса фильтра</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.emptyButtonText || ""}
+                        onChange={(e) => updatePalette("emptyButtonText", e.target.value)}
+                        placeholder="Показать все оттенки"
+                      />
+                    </div>
+                    <div className="admin-field full-width">
+                      <label>Поясняющий текст</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.emptySubtitle || ""}
+                        onChange={(e) => updatePalette("emptySubtitle", e.target.value)}
+                        placeholder="Попробуйте изменить категорию или очистить поисковый запрос."
+                      />
+                    </div>
+                    <div className="admin-field">
+                      <label>Запасной смайлик (если нет фото)</label>
+                      <input
+                        type="text"
+                        className="admin-input"
+                        value={content.palette?.emptyEmoji || ""}
+                        onChange={(e) => updatePalette("emptyEmoji", e.target.value)}
+                        placeholder="🎨"
+                      />
+                    </div>
+                    <div className="admin-field full-width">
+                      <AdminImageUploadField
+                        label="Фотография для экрана «Ничего не найдено» (вместо смайлика)"
+                        value={content.palette?.emptyImageUrl}
+                        onChange={(url) => updatePalette("emptyImageUrl", url)}
+                        fallbackEmoji={content.palette?.emptyEmoji || "🎨"}
+                        aspectRatio="square"
+                        hint="Если загрузить фото, оно будет показано вместо эмодзи 🎨 когда поиск не дал результатов."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {paletteSubTab === "colors" && (
+              <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {colors.map((color) => (
+                    <div
+                      key={color.id}
+                      className="border border-stone-200 rounded-xl p-4 bg-white shadow-sm flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-bold text-sm text-stone-800">{color.title}</span>
+                          <span className="text-xs px-2 py-0.5 rounded font-mono bg-stone-100 text-stone-700 border border-stone-200">
+                            {color.shade_code || "—"}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 mb-3">
+                          <div
+                            className="w-5 h-5 rounded-full border border-stone-300 shadow-inner"
+                            style={{ backgroundColor: color.color_hex || "#ccc" }}
+                          />
+                          <span className="text-xs text-stone-500 font-medium">
+                            {color.brand || "Без бренда"} • {color.finish || "glossy"}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 mb-3">
+                          <div className="text-center">
+                            <img
+                              src={colorService.resolveImageUrl(color.swatch_image_url)}
+                              alt="Свотч"
+                              className="w-full h-24 object-cover rounded-lg border border-stone-200"
+                            />
+                            <span className="text-[10px] text-stone-500 mt-1 block">Образец</span>
+                          </div>
+                          <div className="text-center">
+                            <img
+                              src={colorService.resolveImageUrl(color.manicure_image_url)}
+                              alt="Маникюр"
+                              className="w-full h-24 object-cover rounded-lg border border-stone-200"
+                            />
+                            <span className="text-[10px] text-stone-500 mt-1 block">На ногтях</span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-stone-600 line-clamp-2 mb-3">
+                          {color.description}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-stone-100 flex items-center justify-between">
+                        <span className="text-[11px] text-stone-400">ID: {color.id}</span>
+                        <button
+                          type="button"
+                          className="text-red-600 hover:text-red-700 text-xs font-semibold flex items-center gap-1 p-1"
+                          onClick={() => handleDeleteColor(color.id, color.title)}
+                        >
+                          <Trash2 size={13} />
+                          <span>Удалить</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1338,13 +1682,57 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
           <div className="admin-card">
             <div className="admin-card-header">
               <div>
-                <h2 className="admin-card-title">Безопасность & Доступ для одного пользователя</h2>
+                <h2 className="admin-card-title">Общие настройки сайта & Безопасность</h2>
                 <p className="admin-card-desc">
-                  Ограничение входа только для конкретного email или GitHub-аккаунта
+                  Логотип, бренд, ограничение входа в панель управления и резервные копии
                 </p>
               </div>
             </div>
 
+            {/* Блок бренда и логотипа */}
+            <div className="mb-8">
+              <h3 className="text-base font-bold text-stone-800 mb-3">
+                Бренд и логотип (Шапка и Подвал сайта)
+              </h3>
+              <div className="admin-form-grid">
+                <div className="admin-field">
+                  <label>Название бренда (Часть 1)</label>
+                  <input
+                    type="text"
+                    className="admin-input"
+                    value={content.general?.brandNamePart1 || ""}
+                    onChange={(e) => updateGeneral("brandNamePart1", e.target.value)}
+                    placeholder="Alina"
+                  />
+                </div>
+                <div className="admin-field">
+                  <label>Название бренда (Часть 2, акцент)</label>
+                  <input
+                    type="text"
+                    className="admin-input"
+                    value={content.general?.brandNamePart2 || ""}
+                    onChange={(e) => updateGeneral("brandNamePart2", e.target.value)}
+                    placeholder="Nails"
+                  />
+                </div>
+                <div className="admin-field full-width">
+                  <AdminImageUploadField
+                    label="Фотография или логотип (вместо смайлика 💅 в шапке и подвале)"
+                    value={content.general?.logoImageUrl}
+                    onChange={(url) => updateGeneral("logoImageUrl", url)}
+                    fallbackEmoji="💅"
+                    aspectRatio="square"
+                    hint="Загрузите квадратную картинку логотипа или маленькое фото. Если изображение загружено, оно будет отображаться рядом с названием студии."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-stone-200 my-6" />
+
+            <h3 className="text-base font-bold text-stone-800 mb-3">
+              Безопасность & Доступ для одного пользователя
+            </h3>
             <div className="admin-form-grid mb-8">
               <div className="admin-field full-width">
                 <label>Разрешенные Email администратора (через запятую)</label>

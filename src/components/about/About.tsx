@@ -4,7 +4,7 @@ import "./About.css";
 
 export const About = () => {
   const { content } = useSiteContent();
-  const { title, paragraph1, paragraph2, features, avatarEmoji } = content.about;
+  const { title, paragraph1, paragraph2, features, avatarEmoji, avatarUrl } = content.about;
 
   const getFeatureIcon = (index: number) => {
     switch (index % 4) {
@@ -25,9 +25,18 @@ export const About = () => {
       <div className="container">
         <div className="about-grid">
           <div className="about-image">
-            <div className="about-image-placeholder">
-              <span>{avatarEmoji || "👩‍🎨"}</span>
-            </div>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={title}
+                className="about-photo-img"
+                loading="lazy"
+              />
+            ) : (
+              <div className="about-image-placeholder">
+                <span>{avatarEmoji || "👩‍🎨"}</span>
+              </div>
+            )}
           </div>
           <div className="about-content">
             <h2 className="section-title" style={{ textAlign: "left" }}>

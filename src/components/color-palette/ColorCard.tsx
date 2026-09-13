@@ -8,6 +8,7 @@ interface ColorCardProps {
   viewMode: "split" | "toggle" | "slider";
   onSelect: (color: NailColor) => void;
   onBookWithColor: (color: NailColor) => void;
+  bookButtonText?: string;
 }
 
 export const ColorCard = ({
@@ -15,6 +16,7 @@ export const ColorCard = ({
   viewMode,
   onSelect,
   onBookWithColor,
+  bookButtonText,
 }: ColorCardProps) => {
   // Для режима "toggle"
   const [activePhoto, setActivePhoto] = useState<"swatch" | "manicure">("manicure");
@@ -225,7 +227,7 @@ export const ColorCard = ({
               onBookWithColor(color);
             }}
           >
-            Хочу этот цвет 💅
+            {bookButtonText || "Хочу этот цвет"}
           </button>
         </div>
       </div>

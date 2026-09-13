@@ -9,15 +9,16 @@ import { Contacts } from "./components/contacts";
 import { Footer } from "./components/footer";
 import { ColorPalettePage } from "./components/color-palette";
 import { AdminPage } from "./components/admin";
-import { SiteContentProvider } from "./context";
+import { SiteContentProvider, useSiteContent } from "./context";
 import "./App.css";
 
 function AppContent() {
+  const { content } = useSiteContent();
   const [currentPage, setCurrentPage] = useState<"home" | "palette" | "admin">("home");
   const [activeSection, setActiveSection] = useState("home");
   const [selectedColorForBooking, setSelectedColorForBooking] = useState<string>("");
 
-  // Синхронизация с hash URL (#palette, #admin) и pathname (/admin)
+  // Синхронизация с hash URL (#palette, #admin, #services, #portfolio, #contacts) и pathname
   useEffect(() => {
     const handleUrlChange = () => {
       const hash = window.location.hash.toLowerCase();
@@ -25,11 +26,39 @@ function AppContent() {
 
       if (hash === "#admin" || path.endsWith("/admin") || path.endsWith("/admin/")) {
         setCurrentPage("admin");
-      } else if (hash === "#palette") {
+        document.title = "Панель управления — GoldHandAlina";
+      } else if (hash === "#palette" || path.endsWith("/palette") || path.endsWith("/palette/")) {
         setCurrentPage("palette");
+        document.title = "Палитра оттенков (свотч + маникюр) — GoldHandAlina";
       } else {
         setCurrentPage("home");
+        const brandName = `${content.general?.brandNamePart1 || "Gold"}${content.general?.brandNamePart2 || "Hands"}`;
+        document.title = `${brandName} — Студия маникюра и педикюра`;
+
+        // Если hash указывает на конкретную секцию на главной (#services, #portfolio, #contacts, #booking, #about, #reviews)
+        const cleanHash = hash.replace("#", "");
+        if (cleanHash === "booking") {
+          setActiveSection("contacts");
+          scrollToSection("contacts");
+        } else if (["services", "portfolio", "about", "reviews", "contacts", "home"].includes(cleanHash)) {
+          setActiveSection(cleanHash);
+          scrollToSection(cleanHash);
+        }
       }
+    };
+
+    const scrollToSection = (sectionId: string) => {
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          const offset = 80;
+          const elementPosition = element.offsetTop - offset;
+          window.scrollTo({
+            top: elementPosition,
+            behavior: "smooth",
+          });
+        }
+      }, 80);
     };
 
     handleUrlChange();
@@ -39,7 +68,7 @@ function AppContent() {
       window.removeEventListener("hashchange", handleUrlChange);
       window.removeEventListener("popstate", handleUrlChange);
     };
-  }, []);
+  }, [content.general?.brandNamePart1, content.general?.brandNamePart2]);
 
   // Отслеживание активного раздела при скролле (только на главной)
   useEffect(() => {
@@ -87,10 +116,9 @@ function AppContent() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       setCurrentPage("home");
-      if (window.location.hash === "#palette" || window.location.hash === "#admin") {
-        history.pushState(null, "", window.location.pathname);
-      }
       if (sectionId) {
+        window.location.hash = sectionId;
+        setActiveSection(sectionId);
         setTimeout(() => {
           const element = document.getElementById(sectionId);
           if (element) {
@@ -101,7 +129,12 @@ function AppContent() {
               behavior: "smooth",
             });
           }
-        }, 50);
+        }, 60);
+      } else {
+        if (window.location.hash === "#palette" || window.location.hash === "#admin") {
+          history.pushState(null, "", window.location.pathname);
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
   };
@@ -160,4 +193,5 @@ function App() {
 }
 
 export default App;
+
 

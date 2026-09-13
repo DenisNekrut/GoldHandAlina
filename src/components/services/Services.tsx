@@ -29,7 +29,18 @@ export const Services = () => {
         <div className="services-grid">
           {items.map((service, index) => (
             <div key={service.id || index} className="service-card">
-              <div className="service-icon">{renderIcon(service.icon)}</div>
+              <div className="service-icon">
+                {service.imageUrl ? (
+                  <img
+                    src={service.imageUrl}
+                    alt={service.title}
+                    className="service-photo-img"
+                    loading="lazy"
+                  />
+                ) : (
+                  renderIcon(service.icon)
+                )}
+              </div>
               <h3 className="service-title">{service.title}</h3>
               <p className="service-description">{service.description}</p>
               <span className="service-price">{service.price}</span>

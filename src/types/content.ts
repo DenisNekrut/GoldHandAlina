@@ -14,6 +14,7 @@ export interface HeroContent {
   statSterilityLabel: string;
   avatarEmoji: string;
   avatarUrl?: string;
+  badgeImageUrl?: string;
 }
 
 export interface ServiceItem {
@@ -22,6 +23,7 @@ export interface ServiceItem {
   description: string;
   price: string;
   icon: string; // 'hands' | 'brush' | 'magic' | 'spa' or custom string
+  imageUrl?: string;
 }
 
 export interface ServicesContent {
@@ -39,7 +41,7 @@ export interface PortfolioItem {
   id: string | number;
   category: string;
   title: string;
-  emoji: string;
+  emoji?: string;
   imageUrl?: string;
 }
 
@@ -71,6 +73,7 @@ export interface ReviewItem {
   text: string;
   rating: number;
   date: string;
+  avatarUrl?: string;
 }
 
 export interface ReviewsContent {
@@ -103,10 +106,35 @@ export interface ContactsContent {
   socials: SocialLinkItem[];
 }
 
+export interface PaletteCategoryItem {
+  id: string;
+  label: string;
+}
+
+export interface PalettePageContent {
+  badge: string;
+  title: string;
+  subtitle: string;
+  backButtonText: string;
+  searchPlaceholder: string;
+  categories: PaletteCategoryItem[];
+  viewModeLabel: string;
+  viewModeSplitText: string;
+  viewModeToggleText: string;
+  viewModeSliderText: string;
+  bookButtonText: string;
+  emptyTitle: string;
+  emptySubtitle: string;
+  emptyButtonText: string;
+  emptyImageUrl?: string;
+  emptyEmoji?: string;
+}
+
 export interface GeneralSettings {
   brandNamePart1: string;
   brandNamePart2: string;
   tagline: string;
+  logoImageUrl?: string;
   allowedEmails: string[];
   allowedGithubUsernames: string[];
 }
@@ -121,4 +149,6 @@ export interface SiteContent {
   about: AboutContent;
   reviews: ReviewsContent;
   contacts: ContactsContent;
+  palette: PalettePageContent;
 }
+

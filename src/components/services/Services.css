@@ -28,6 +28,18 @@
   font-size: 2.8rem;
   color: var(--primary);
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-photo-img {
+  width: 76px;
+  height: 76px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--primary-light);
+  box-shadow: 0 6px 16px rgba(212, 160, 160, 0.25);
 }
 
 .service-title {
