@@ -1,0 +1,6 @@
+{
+  "name": "GoldHandAlina",
+  "description": "Портфолио мастера маникюра Алины с интерактивным каталогом оттенков: 2 фото для каждого цвета (образец лака и готовый маникюр на ногтях).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
