@@ -10,7 +10,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     brandNamePart1: "Gold",
     brandNamePart2: "Hands",
     tagline: "Студия идеального маникюра и педикюра",
-    allowedEmails: ["lty8650@gmail.com", "alina_nekrut1701@mail.ru"],
+    allowedEmails: ["lty2015@mail.ru", "lty8650@gmail.com", "alina_nekrut1701@mail.ru"],
     allowedGithubUsernames: ["DenisNekrut"],
   },
   hero: {
@@ -403,12 +403,13 @@ export const siteContentService = {
   ): boolean {
     if (!user) return false;
 
-    const allowedEmails =
-      currentContent?.general?.allowedEmails ||
-      DEFAULT_SITE_CONTENT.general.allowedEmails;
-    const allowedGithub =
-      currentContent?.general?.allowedGithubUsernames ||
-      DEFAULT_SITE_CONTENT.general.allowedGithubUsernames;
+    const configuredEmails = currentContent?.general?.allowedEmails || [];
+    const defaultEmails = DEFAULT_SITE_CONTENT.general.allowedEmails;
+    const allowedEmails = Array.from(new Set([...configuredEmails, ...defaultEmails]));
+
+    const configuredGithub = currentContent?.general?.allowedGithubUsernames || [];
+    const defaultGithub = DEFAULT_SITE_CONTENT.general.allowedGithubUsernames;
+    const allowedGithub = Array.from(new Set([...configuredGithub, ...defaultGithub]));
 
     const userEmail = (user.email || "").trim().toLowerCase();
     const githubName = (

@@ -6,7 +6,6 @@ import {
   AlertCircle,
   CheckCircle2,
   ArrowRight,
-  ShieldCheck,
   LogOut,
 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
@@ -75,7 +74,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
             onSuccess(data.user);
           } else {
             setUnauthorizedUser(data.user);
-            setErrorMsg(`Доступ запрещен. Аккаунт ${data.user.email} не входит в список разрешенных администраторов.`);
+            setErrorMsg("Доступ запрещен. У данной учетной записи нет прав администратора.");
           }
         }
       } else if (authMode === "register") {
@@ -96,7 +95,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
             onSuccess(data.user);
           } else {
             setUnauthorizedUser(data.user);
-            setErrorMsg(`Аккаунт создан, но ${data.user.email} не входит в список администраторов.`);
+            setErrorMsg("Аккаунт создан, но у него нет прав администратора.");
           }
         } else if (data.user) {
           setSuccessMsg("Аккаунт создан! Если включено подтверждение email, проверьте почту или войдите.");
@@ -158,9 +157,6 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
     setErrorMsg(null);
   };
 
-  const allowedEmails = content.general?.allowedEmails || [];
-  const allowedGithub = content.general?.allowedGithubUsernames || [];
-
   return (
     <div className="admin-modal-overlay">
       <div className="admin-modal-card">
@@ -174,22 +170,13 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
           </p>
         </div>
 
-        {/* Информационный бейдж о разрешенных администраторах */}
-        <div className="admin-allowed-banner">
-          <ShieldCheck size={16} />
-          <span>
-            Разрешенный доступ: <strong>{allowedEmails.join(", ")}</strong>
-            {allowedGithub.length > 0 && ` или GitHub: ${allowedGithub.join(", ")}`}
-          </span>
-        </div>
-
         {unauthorizedUser ? (
           <div className="admin-unauthorized-box">
             <AlertCircle size={32} className="text-red-500" />
             <h4>Доступ отклонен</h4>
             <p>
               Вы вошли как <strong>{unauthorizedUser.email || unauthorizedUser.user_metadata?.user_name}</strong>.
-              Этот аккаунт не указан в списке доверенных администраторов.
+              У данной учетной записи нет прав для управления сайтом.
             </p>
             <div className="admin-modal-actions">
               <button
@@ -260,7 +247,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="lty8650@gmail.com"
+                    placeholder="admin@example.com"
                     autoComplete="email"
                   />
                 </div>

@@ -1343,7 +1343,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
                     const emails = e.target.value.split(",").map((s) => s.trim()).filter(Boolean);
                     updateGeneral("allowedEmails", emails);
                   }}
-                  placeholder="lty8650@gmail.com, alina_nekrut1701@mail.ru"
+                  placeholder="lty2015@mail.ru, alina_nekrut1701@mail.ru"
                 />
                 <span className="admin-hint">
                   Только указанные адреса электронной почты смогут авторизоваться в этой панели.
