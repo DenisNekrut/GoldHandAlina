@@ -19,10 +19,13 @@ import {
   CheckCircle,
   AlertCircle,
   Clock,
+  Copy,
+  Check,
+  Database,
 } from "lucide-react";
 import type { SiteContent, ServiceItem, PortfolioItem, ReviewItem, AboutFeature } from "../../types/content";
 import { siteContentService } from "../../services/siteContentService";
-import { getSupabase } from "../../lib/supabase";
+import { getSupabase, SUPABASE_SCHEMA_SQL } from "../../lib/supabase";
 import { colorService } from "../color-palette/colorService";
 import type { NailColor } from "../color-palette/types";
 import { AddColorModal } from "../color-palette/AddColorModal";
@@ -46,8 +49,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
   const [colors, setColors] = useState<NailColor[]>([]);
   const [isAddColorOpen, setIsAddColorOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string>("");
+  const [copiedSql, setCopiedSql] = useState(false);
 
   const supabase = getSupabase();
+
+  const handleCopySql = () => {
+    navigator.clipboard.writeText(SUPABASE_SCHEMA_SQL);
+    setCopiedSql(true);
+    setTimeout(() => setCopiedSql(false), 2000);
+  };
 
   // Загрузка контента и проверка авторизованного пользователя
   useEffect(() => {
@@ -110,11 +120,13 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
       if (ok) {
         setHasChanges(false);
         setSaveStatus("success");
-        setStatusMessage("Все изменения успешно сохранены в Supabase!");
+        setStatusMessage("Все изменения успешно сохранены в облако Supabase!");
         setTimeout(() => setSaveStatus("idle"), 4000);
       } else {
         setSaveStatus("error");
-        setStatusMessage("Не удалось сохранить в Supabase. Проверьте консоль.");
+        setStatusMessage(
+          "Изменения сохранены в браузере. Для синхронизации с Supabase выполните SQL-скрипт (вкладка «Доступ»)."
+        );
       }
     } catch (e: any) {
       setSaveStatus("error");
@@ -1367,6 +1379,46 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
                   Только эти пользователи GitHub смогут войти через кнопку "Войти через GitHub".
                 </span>
               </div>
+            </div>
+
+            <hr className="border-stone-200 my-6" />
+
+            <div className="mb-6 p-4 rounded-xl border border-stone-200 bg-stone-50">
+              <div className="flex items-start justify-between gap-4 flex-wrap mb-3">
+                <div className="flex items-center gap-2">
+                  <Database className="text-amber-700" size={20} />
+                  <h3 className="text-base font-bold text-stone-800">
+                    База данных Supabase (Устранение ошибок 404 и 42501 RLS)
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    className="admin-btn secondary"
+                    onClick={handleCopySql}
+                  >
+                    {copiedSql ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
+                    <span>{copiedSql ? "Скопировано!" : "Скопировать готовый SQL"}</span>
+                  </button>
+                  <a
+                    href="https://supabase.com/dashboard/project/inzrvcskvxjfpgzmnjno/sql/new"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="admin-btn primary text-xs flex items-center gap-1.5"
+                  >
+                    <ExternalLink size={14} />
+                    <span>Открыть Supabase SQL Editor</span>
+                  </a>
+                </div>
+              </div>
+
+              <p className="text-xs text-stone-600 mb-3 leading-relaxed">
+                Если при редактировании в логах Supabase отображается <strong>404</strong> (таблица <code>site_content</code>) или <strong>42501</strong> (нарушение RLS-политики <code>USING</code> для <code>nail_colors</code>), откройте <strong>Supabase → SQL Editor</strong>, вставьте и запустите (кнопка <strong>Run</strong>) этот скрипт:
+              </p>
+
+              <pre className="text-xs bg-white p-3 rounded-lg border border-stone-200 overflow-x-auto text-stone-700 max-h-48 font-mono leading-relaxed">
+                {SUPABASE_SCHEMA_SQL}
+              </pre>
             </div>
 
             <hr className="border-stone-200 my-6" />

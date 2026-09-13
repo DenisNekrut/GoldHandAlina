@@ -320,7 +320,7 @@ export const siteContentService = {
 
     let saved = false;
 
-    // 1. Попытка сохранения в site_content (если таблица существует)
+    // 1. Первичная попытка сохранения в выделенную таблицу site_content
     try {
       const { error: scErr } = await supabase
         .from("site_content")
@@ -332,29 +332,33 @@ export const siteContentService = {
 
       if (!scErr) {
         saved = true;
+      } else {
+        console.warn("Supabase site_content table response:", scErr.message);
       }
-    } catch {
-      // Игнорируем ошибку отсутствия таблицы
+    } catch (scEx) {
+      console.warn("Supabase site_content query failed:", scEx);
     }
 
-    // 2. Гарантированное сохранение в nail_colors (__site_settings__)
-    try {
-      const payloadString = JSON.stringify(updatedContent);
-      const { error: ncErr } = await supabase.from("nail_colors").upsert({
-        id: "__site_settings__",
-        title: "__SITE_SETTINGS__",
-        swatch_image_url: "none",
-        manicure_image_url: "none",
-        description: payloadString,
-      });
+    // 2. Fallback в nail_colors (__site_settings__) только если site_content не сохранен
+    if (!saved) {
+      try {
+        const payloadString = JSON.stringify(updatedContent);
+        const { error: ncErr } = await supabase.from("nail_colors").upsert({
+          id: "__site_settings__",
+          title: "__SITE_SETTINGS__",
+          swatch_image_url: "none",
+          manicure_image_url: "none",
+          description: payloadString,
+        });
 
-      if (!ncErr) {
-        saved = true;
-      } else {
-        console.error("Failed to save __site_settings__ to Supabase:", ncErr);
+        if (!ncErr) {
+          saved = true;
+        } else {
+          console.warn("Supabase nail_colors fallback warning:", ncErr.message);
+        }
+      } catch (e) {
+        console.warn("Error saving __site_settings__ fallback:", e);
       }
-    } catch (e) {
-      console.error("Error saving __site_settings__:", e);
     }
 
     return saved;

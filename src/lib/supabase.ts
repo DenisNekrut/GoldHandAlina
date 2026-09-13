@@ -33,7 +33,9 @@ export const getSupabase = (): SupabaseClient | null => {
 };
 
 // SQL-скрипт для создания таблицы и политик в Supabase SQL Editor
-export const SUPABASE_SCHEMA_SQL = `-- 1. Создание таблицы для каталога оттенков и маникюра
+export const SUPABASE_SCHEMA_SQL = `-- ============================================================
+-- 1. Таблица для каталога оттенков (nail_colors)
+-- ============================================================
 create table if not exists public.nail_colors (
   id text primary key default ('nc-' || extract(epoch from now())::bigint::text || '-' || floor(random() * 1000)::text),
   title text not null,
@@ -48,10 +50,9 @@ create table if not exists public.nail_colors (
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
--- 2. Включение Row Level Security (RLS)
 alter table public.nail_colors enable row level security;
 
--- 3. Политики безопасности (чтение, добавление, удаление)
+-- Политики безопасности для nail_colors (SELECT, INSERT, UPDATE, DELETE)
 drop policy if exists "Public can view nail colors" on public.nail_colors;
 create policy "Public can view nail colors" 
   on public.nail_colors for select 
@@ -62,12 +63,49 @@ create policy "Public can insert colors"
   on public.nail_colors for insert 
   with check (true);
 
+drop policy if exists "Public can update colors" on public.nail_colors;
+create policy "Public can update colors" 
+  on public.nail_colors for update 
+  using (true)
+  with check (true);
+
 drop policy if exists "Public can delete colors" on public.nail_colors;
 create policy "Public can delete colors" 
   on public.nail_colors for delete 
   using (true);
 
--- 4. Заполнение начальными 8 оттенками с фотографиями из Backblaze B2 (goldhandsbusket)
+-- ============================================================
+-- 2. Таблица для настроек и контента сайта (site_content)
+-- ============================================================
+create table if not exists public.site_content (
+  key text primary key,
+  data jsonb not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+alter table public.site_content enable row level security;
+
+-- Политики безопасности для site_content (SELECT, INSERT, UPDATE, DELETE)
+drop policy if exists "Allow all on site_content" on public.site_content;
+create policy "Allow all on site_content" 
+  on public.site_content for all 
+  using (true) 
+  with check (true);
+
+-- Включение real-time уведомлений
+do $$
+begin
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and tablename = 'nail_colors') then
+    alter publication supabase_realtime add table public.nail_colors;
+  end if;
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and tablename = 'site_content') then
+    alter publication supabase_realtime add table public.site_content;
+  end if;
+exception when others then
+  null;
+end $$;
+
+-- 3. Заполнение стартовыми оттенками палитры
 insert into public.nail_colors (id, title, shade_code, color_hex, swatch_image_url, manicure_image_url, category, finish, brand, description, created_at)
 values
   ('nc-1', 'Нежный молочный нюд', 'N-01', '#F5EBE6', '/api/b2/file/nail-colors/1789291410514-swatch_nc-1_N-01.jpg', '/api/b2/file/nail-colors/1789291410801-manicure_nc-1_N-01.jpg', 'nude', 'glossy', 'Luxio', 'Универсальный полупрозрачный молочно-розовый оттенок. Идеальная база под френч и для утонченного естественного покрытия.', '2026-03-01T10:00:00Z'),
