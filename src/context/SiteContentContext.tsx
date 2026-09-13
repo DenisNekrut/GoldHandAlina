@@ -1,22 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import type { SiteContent } from "../types/content";
 import { siteContentService, DEFAULT_SITE_CONTENT } from "../services/siteContentService";
-
-interface SiteContentContextType {
-  content: SiteContent;
-  loading: boolean;
-  updateContent: (newContent: SiteContent) => Promise<boolean>;
-  resetContent: () => Promise<void>;
-  reloadContent: () => Promise<void>;
-}
-
-export const SiteContentContext = createContext<SiteContentContextType>({
-  content: DEFAULT_SITE_CONTENT,
-  loading: true,
-  updateContent: async () => false,
-  resetContent: async () => {},
-  reloadContent: async () => {},
-});
+import { SiteContentContext } from "./siteContentContextDef";
 
 export const SiteContentProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -24,7 +9,7 @@ export const SiteContentProvider: React.FC<{ children: React.ReactNode }> = ({
   const [content, setContent] = useState<SiteContent>(DEFAULT_SITE_CONTENT);
   const [loading, setLoading] = useState(true);
 
-  const loadContent = async () => {
+  const loadContent = useCallback(async () => {
     try {
       const data = await siteContentService.getContent();
       setContent(data);
@@ -33,17 +18,32 @@ export const SiteContentProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadContent();
+    let active = true;
+
+    siteContentService.getContent().then((data) => {
+      if (active) {
+        setContent(data);
+        setLoading(false);
+      }
+    }).catch((e) => {
+      console.error("Failed to load site content:", e);
+      if (active) {
+        setLoading(false);
+      }
+    });
 
     // Подписка на обновление контента в реальном времени
     const unsubscribe = siteContentService.subscribeToChanges((fresh) => {
-      setContent(fresh);
+      if (active) {
+        setContent(fresh);
+      }
     });
 
     return () => {
+      active = false;
       unsubscribe();
     };
   }, []);
@@ -78,4 +78,3 @@ export const SiteContentProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const useSiteContent = () => useContext(SiteContentContext);

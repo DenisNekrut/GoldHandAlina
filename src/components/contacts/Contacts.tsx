@@ -9,7 +9,7 @@ import {
   FaWhatsapp,
   FaClock,
 } from "react-icons/fa";
-import { useSiteContent } from "../../context/SiteContentContext";
+import { useSiteContent } from "../../context";
 import "./Contacts.css";
 
 interface ContactsProps {

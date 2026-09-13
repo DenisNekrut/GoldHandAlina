@@ -9,7 +9,7 @@ import { Contacts } from "./components/contacts";
 import { Footer } from "./components/footer";
 import { ColorPalettePage } from "./components/color-palette";
 import { AdminPage } from "./components/admin";
-import { SiteContentProvider } from "./context/SiteContentContext";
+import { SiteContentProvider } from "./context";
 import "./App.css";
 
 function AppContent() {

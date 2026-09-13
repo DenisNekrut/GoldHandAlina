@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSiteContent } from "../../context/SiteContentContext";
+import { useSiteContent } from "../../context";
 import "./Portfolio.css";
 
 export const Portfolio = () => {

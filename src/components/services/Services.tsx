@@ -1,5 +1,5 @@
 import { FaHands, FaPaintBrush, FaMagic, FaSpa, FaRegGem } from "react-icons/fa";
-import { useSiteContent } from "../../context/SiteContentContext";
+import { useSiteContent } from "../../context";
 import "./Services.css";
 
 export const Services = () => {

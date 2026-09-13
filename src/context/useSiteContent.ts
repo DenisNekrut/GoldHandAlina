@@ -1,4 +1,5 @@
 import { useContext } from "react";
-import { SiteContentContext } from "./SiteContentContext";
+import { SiteContentContext } from "./siteContentContextDef";
 
 export const useSiteContent = () => useContext(SiteContentContext);
+

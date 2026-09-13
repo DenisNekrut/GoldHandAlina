@@ -1,5 +1,5 @@
 import "./Hero.css";
-import { useSiteContent } from "../../context/SiteContentContext";
+import { useSiteContent } from "../../context";
 
 interface HeroProps {
   onOpenPalette?: () => void;

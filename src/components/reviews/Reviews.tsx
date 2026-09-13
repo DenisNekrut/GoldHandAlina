@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaStar, FaQuoteLeft } from "react-icons/fa";
-import { useSiteContent } from "../../context/SiteContentContext";
+import { useSiteContent } from "../../context";
 import "./Reviews.css";
 
 export const Reviews = () => {

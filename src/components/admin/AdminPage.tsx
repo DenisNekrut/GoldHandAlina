@@ -52,19 +52,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ onBackToSite }) => {
   // Загрузка контента и проверка авторизованного пользователя
   useEffect(() => {
     let isMounted = true;
+    const client = getSupabase();
 
     async function init() {
       const loadedContent = await siteContentService.getContent();
       if (!isMounted) return;
       setContent(loadedContent);
 
-      if (supabase) {
-        const { data: { session } } = await supabase.auth.getSession();
+      if (client) {
+        const { data: { session } } = await client.auth.getSession();
         if (session?.user && siteContentService.isUserAllowedAdmin(session.user, loadedContent)) {
           setCurrentUser(session.user);
         }
 
-        const { data: authListener } = supabase.auth.onAuthStateChange(
+        const { data: authListener } = client.auth.onAuthStateChange(
           async (_event, session) => {
             if (session?.user) {
               if (siteContentService.isUserAllowedAdmin(session.user, loadedContent)) {

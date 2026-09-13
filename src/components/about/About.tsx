@@ -1,5 +1,5 @@
 import { FaCheckCircle, FaHeart, FaShieldAlt, FaStar } from "react-icons/fa";
-import { useSiteContent } from "../../context/SiteContentContext";
+import { useSiteContent } from "../../context";
 import "./About.css";
 
 export const About = () => {
