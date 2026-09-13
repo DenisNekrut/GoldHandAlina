@@ -8,27 +8,37 @@ import { Reviews } from "./components/reviews";
 import { Contacts } from "./components/contacts";
 import { Footer } from "./components/footer";
 import { ColorPalettePage } from "./components/color-palette";
+import { AdminPage } from "./components/admin";
+import { SiteContentProvider } from "./context/SiteContentContext";
 import "./App.css";
 
-function App() {
-  const [currentPage, setCurrentPage] = useState<"home" | "palette">("home");
+function AppContent() {
+  const [currentPage, setCurrentPage] = useState<"home" | "palette" | "admin">("home");
   const [activeSection, setActiveSection] = useState("home");
   const [selectedColorForBooking, setSelectedColorForBooking] = useState<string>("");
 
-  // Синхронизация с hash URL (например /#palette)
+  // Синхронизация с hash URL (#palette, #admin) и pathname (/admin)
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash === "#palette") {
+    const handleUrlChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      const path = window.location.pathname.toLowerCase();
+
+      if (hash === "#admin" || path.endsWith("/admin") || path.endsWith("/admin/")) {
+        setCurrentPage("admin");
+      } else if (hash === "#palette") {
         setCurrentPage("palette");
       } else {
         setCurrentPage("home");
       }
     };
 
-    handleHashChange();
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
+    handleUrlChange();
+    window.addEventListener("hashchange", handleUrlChange);
+    window.addEventListener("popstate", handleUrlChange);
+    return () => {
+      window.removeEventListener("hashchange", handleUrlChange);
+      window.removeEventListener("popstate", handleUrlChange);
+    };
   }, []);
 
   // Отслеживание активного раздела при скролле (только на главной)
@@ -66,14 +76,18 @@ function App() {
   }, [currentPage]);
 
   // Навигация между страницами и секциями
-  const handleNavigate = (page: "home" | "palette", sectionId?: string) => {
+  const handleNavigate = (page: "home" | "palette" | "admin", sectionId?: string) => {
     if (page === "palette") {
       setCurrentPage("palette");
       window.location.hash = "palette";
       window.scrollTo({ top: 0, behavior: "smooth" });
+    } else if (page === "admin") {
+      setCurrentPage("admin");
+      window.location.hash = "admin";
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       setCurrentPage("home");
-      if (window.location.hash === "#palette") {
+      if (window.location.hash === "#palette" || window.location.hash === "#admin") {
         history.pushState(null, "", window.location.pathname);
       }
       if (sectionId) {
@@ -97,6 +111,11 @@ function App() {
     setSelectedColorForBooking(`${colorTitle} (${shadeCode})`);
     handleNavigate("home", "contacts");
   };
+
+  // Страница администрирования
+  if (currentPage === "admin") {
+    return <AdminPage onBackToSite={() => handleNavigate("home")} />;
+  }
 
   return (
     <div className="App">
@@ -132,4 +151,13 @@ function App() {
   );
 }
 
+function App() {
+  return (
+    <SiteContentProvider>
+      <AppContent />
+    </SiteContentProvider>
+  );
+}
+
 export default App;
+

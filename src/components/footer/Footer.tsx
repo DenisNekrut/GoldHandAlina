@@ -1,14 +1,14 @@
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaLock } from "react-icons/fa";
 import "./Footer.css";
 
 interface FooterProps {
-  onNavigate?: (page: "home" | "palette", sectionId?: string) => void;
+  onNavigate?: (page: "home" | "palette" | "admin", sectionId?: string) => void;
 }
 
 export const Footer = ({ onNavigate }: FooterProps) => {
   const currentYear = new Date().getFullYear();
 
-  const handleLinkClick = (e: React.MouseEvent, page: "home" | "palette", sectionId?: string) => {
+  const handleLinkClick = (e: React.MouseEvent, page: "home" | "palette" | "admin", sectionId?: string) => {
     if (onNavigate) {
       e.preventDefault();
       onNavigate(page, sectionId);
@@ -57,7 +57,6 @@ export const Footer = ({ onNavigate }: FooterProps) => {
               </ul>
             </div>
 
-
             <div className="footer-hours">
               <h4>Часы работы</h4>
               <ul>
@@ -72,12 +71,24 @@ export const Footer = ({ onNavigate }: FooterProps) => {
 
         <div className="footer-bottom">
           <p>© {currentYear} GoldHands. Все права защищены.</p>
-          <p className="footer-made-with">
-            Сделано с <FaHeart className="heart-icon" /> для вас
-          </p>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={(e) => handleLinkClick(e, "admin")}
+              className="text-xs text-stone-400 hover:text-stone-600 transition-colors flex items-center gap-1.5 cursor-pointer bg-transparent border-none p-0"
+              title="Панель управления сайтом (/admin)"
+            >
+              <FaLock size={11} />
+              <span>Панель мастера</span>
+            </button>
+            <p className="footer-made-with">
+              Сделано с <FaHeart className="heart-icon" /> для вас
+            </p>
+          </div>
         </div>
       </div>
     </footer>
   );
 };
+
 

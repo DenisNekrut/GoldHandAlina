@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { Lock } from "lucide-react";
 import "./Header.css";
 
 interface HeaderProps {
   id: string;
-  activePage?: "home" | "palette";
-  onNavigate?: (page: "home" | "palette", sectionId?: string) => void;
+  activePage?: "home" | "palette" | "admin";
+  onNavigate?: (page: "home" | "palette" | "admin", sectionId?: string) => void;
 }
 
 export const Header = ({ id, activePage = "home", onNavigate }: HeaderProps) => {
@@ -39,6 +40,13 @@ export const Header = ({ id, activePage = "home", onNavigate }: HeaderProps) => 
   const handlePaletteClick = () => {
     if (onNavigate) {
       onNavigate("palette");
+    }
+    setIsMenuOpen(false);
+  };
+
+  const handleAdminClick = () => {
+    if (onNavigate) {
+      onNavigate("admin");
     }
     setIsMenuOpen(false);
   };
@@ -81,6 +89,25 @@ export const Header = ({ id, activePage = "home", onNavigate }: HeaderProps) => 
                 <span className="palette-nav-badge">2 фото</span>
               </button>
             </li>
+
+            {/* Вход в панель управления для мастера */}
+            <li>
+              <button
+                className={`nav-link ${activePage === "admin" ? "active" : ""}`}
+                onClick={handleAdminClick}
+                title="Панель управления сайтом /admin"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  fontSize: "13px",
+                  opacity: 0.85
+                }}
+              >
+                <Lock size={14} />
+                <span>Админка</span>
+              </button>
+            </li>
           </ul>
         </nav>
 
@@ -97,4 +124,5 @@ export const Header = ({ id, activePage = "home", onNavigate }: HeaderProps) => 
     </header>
   );
 };
+
 

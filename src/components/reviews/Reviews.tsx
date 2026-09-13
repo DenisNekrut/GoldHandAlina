@@ -1,89 +1,81 @@
 import { useState } from "react";
 import { FaStar, FaQuoteLeft } from "react-icons/fa";
+import { useSiteContent } from "../../context/SiteContentContext";
 import "./Reviews.css";
 
 export const Reviews = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { content } = useSiteContent();
+  const { title, subtitle, items: reviews } = content.reviews;
 
-  const reviews = [
-    {
-      name: "Екатерина",
-      text: "Анна — настоящий профессионал! Сделала маникюр, который держится уже 3 недели. Дизайн просто волшебный, все аккуратно и стерильно. Обязательно вернусь ещё!",
-      rating: 5,
-      date: "2 недели назад",
-    },
-    {
-      name: "Мария",
-      text: "Очень довольна результатом! Спасибо за индивидуальный подход и внимание к деталям. Парафинотерапия — это отдельное удовольствие. Рекомендую всем!",
-      rating: 5,
-      date: "1 месяц назад",
-    },
-    {
-      name: "Ольга",
-      text: "Прекрасный мастер! Нарастила ногти к свадьбе, выглядели просто шикарно. Анна учла все мои пожелания и сделала ногти идеальной формы. Спасибо огромное!",
-      rating: 5,
-      date: "2 месяца назад",
-    },
-    {
-      name: "Светлана",
-      text: "Всегда хожу только к Анне! Отличное качество, приятная атмосфера и всегда свежие идеи для дизайна. Мои любимые ногти теперь только здесь.",
-      rating: 5,
-      date: "3 месяца назад",
-    },
-  ];
+  // Safe fallback if reviews array is empty or index exceeds length
+  const safeIndex = reviews.length > 0 ? currentIndex % reviews.length : 0;
+  const currentReview = reviews[safeIndex];
 
   const nextReview = () => {
-    setCurrentIndex((prev) => (prev + 1) % reviews.length);
+    if (reviews.length > 0) {
+      setCurrentIndex((prev) => (prev + 1) % reviews.length);
+    }
   };
 
   const prevReview = () => {
-    setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+    if (reviews.length > 0) {
+      setCurrentIndex((prev) => (prev - 1 + reviews.length) % reviews.length);
+    }
   };
 
-  const renderStars = (count : number) => {
+  const renderStars = (count: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <FaStar key={i} className={i < count ? "star-filled" : "star-empty"} />
     ));
   };
 
+  if (!currentReview) {
+    return null;
+  }
+
   return (
     <section id="reviews" className="reviews">
       <div className="container">
-        <h2 className="section-title">Отзывы</h2>
-        <p className="section-subtitle">Что говорят мои клиенты</p>
+        <h2 className="section-title">{title}</h2>
+        <p className="section-subtitle">{subtitle}</p>
 
         <div className="reviews-carousel">
-          <button className="carousel-btn prev" onClick={prevReview}>
+          <button className="carousel-btn prev" onClick={prevReview} aria-label="Предыдущий отзыв">
             ‹
           </button>
 
           <div className="review-card">
             <FaQuoteLeft className="quote-icon" />
             <div className="review-stars">
-              {renderStars(reviews[currentIndex].rating)}
+              {renderStars(currentReview.rating)}
             </div>
-            <p className="review-text">"{reviews[currentIndex].text}"</p>
+            <p className="review-text">"{currentReview.text}"</p>
             <div className="review-author">
-              <strong>{reviews[currentIndex].name}</strong>
-              <span className="review-date">{reviews[currentIndex].date}</span>
+              <strong>{currentReview.name}</strong>
+              <span className="review-date">{currentReview.date}</span>
             </div>
           </div>
 
-          <button className="carousel-btn next" onClick={nextReview}>
+          <button className="carousel-btn next" onClick={nextReview} aria-label="Следующий отзыв">
             ›
           </button>
         </div>
 
-        <div className="review-dots">
-          {reviews.map((_, index) => (
-            <button
-              key={index}
-              className={`dot ${index === currentIndex ? "active" : ""}`}
-              onClick={() => setCurrentIndex(index)}
-            />
-          ))}
-        </div>
+        {reviews.length > 1 && (
+          <div className="review-dots">
+            {reviews.map((_, index) => (
+              <button
+                key={index}
+                className={`dot ${index === safeIndex ? "active" : ""}`}
+                onClick={() => setCurrentIndex(index)}
+                aria-label={`Отзыв ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 };
+

@@ -5,9 +5,11 @@ import {
   FaEnvelope,
   FaInstagram,
   FaTelegram,
+  FaVk,
   FaWhatsapp,
   FaClock,
 } from "react-icons/fa";
+import { useSiteContent } from "../../context/SiteContentContext";
 import "./Contacts.css";
 
 interface ContactsProps {
@@ -16,6 +18,9 @@ interface ContactsProps {
 }
 
 export const Contacts = ({ selectedColorNotes, onClearColorNotes }: ContactsProps) => {
+  const { content } = useSiteContent();
+  const { title, subtitle, infoItems, socials } = content.contacts;
+
   const [prevColorNote, setPrevColorNote] = useState(selectedColorNotes);
   const [formData, setFormData] = useState({
     name: "",
@@ -56,50 +61,46 @@ export const Contacts = ({ selectedColorNotes, onClearColorNotes }: ContactsProp
     }, 3000);
   };
 
+  const renderContactIcon = (iconType: string) => {
+    switch (iconType) {
+      case "phone":
+        return <FaPhone />;
+      case "email":
+        return <FaEnvelope />;
+      case "clock":
+        return <FaClock />;
+      case "address":
+      default:
+        return <FaMapMarkerAlt />;
+    }
+  };
 
-  const contactInfo = [
-    {
-      icon: <FaMapMarkerAlt />,
-      title: "Адрес",
-      details: "г. Москва, г. Троицк, ул. Новая, д. 2, студия 31",
-    },
-    {
-      icon: <FaPhone />,
-      title: "Телефон",
-      details: "+7 (995) 658-96-40",
-      link: "tel:+79956589640",
-    },
-    {
-      icon: <FaEnvelope />,
-      title: "Email",
-      details: "alina_nekrut1701@mail.ru",
-      link: "mailto:anna.nail@studio.ru",
-    },
-    {
-      icon: <FaClock />,
-      title: "Записаться",
-      details: "Dikidi.ru",
-      link: "https://dikidi.ru/1742415",
-    },
-  ];
-
-  const socialLinks = [
-    { icon: <FaInstagram />, url: "https://instagram.com", label: "Instagram" },
-    { icon: <FaTelegram />, url: "https://t.me", label: "Telegram" },
-    { icon: <FaWhatsapp />, url: "https://vk.ru/id609435917", label: "VK" },
-  ];
+  const renderSocialIcon = (id: string) => {
+    switch (id) {
+      case "vk":
+        return <FaVk />;
+      case "instagram":
+        return <FaInstagram />;
+      case "telegram":
+        return <FaTelegram />;
+      case "whatsapp":
+        return <FaWhatsapp />;
+      default:
+        return <FaTelegram />;
+    }
+  };
 
   return (
     <section id="contacts" className="contacts">
       <div className="container">
-        <h2 className="section-title">Контакты</h2>
-        <p className="section-subtitle">Свяжитесь со мной удобным способом</p>
+        <h2 className="section-title">{title}</h2>
+        <p className="section-subtitle">{subtitle}</p>
 
         <div className="contacts-grid">
           <div className="contacts-info">
-            {contactInfo.map((item, index) => (
-              <div key={index} className="contact-item">
-                <div className="contact-icon">{item.icon}</div>
+            {infoItems.map((item, index) => (
+              <div key={item.id || index} className="contact-item">
+                <div className="contact-icon">{renderContactIcon(item.type)}</div>
                 <div className="contact-details">
                   <h4>{item.title}</h4>
                   {item.link ? (
@@ -114,16 +115,16 @@ export const Contacts = ({ selectedColorNotes, onClearColorNotes }: ContactsProp
             <div className="social-links">
               <p className="social-title">Социальные сети</p>
               <div className="social-icons">
-                {socialLinks.map((social, index) => (
+                {socials.map((social, index) => (
                   <a
-                    key={index}
+                    key={social.id || index}
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="social-icon"
                     aria-label={social.label}
                   >
-                    {social.icon}
+                    {renderSocialIcon(social.id)}
                   </a>
                 ))}
               </div>

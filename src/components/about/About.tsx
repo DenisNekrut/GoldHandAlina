@@ -1,13 +1,24 @@
 import { FaCheckCircle, FaHeart, FaShieldAlt, FaStar } from "react-icons/fa";
+import { useSiteContent } from "../../context/SiteContentContext";
 import "./About.css";
 
 export const About = () => {
-  const features = [
-    { icon: <FaCheckCircle />, text: "Более 3 лет профессионального опыта" },
-    { icon: <FaHeart />, text: "Индивидуальный подход к каждой клиентке" },
-    { icon: <FaShieldAlt />, text: "Стерильность и безопасность на 100%" },
-    { icon: <FaStar />, text: "Постоянное обучение новым техникам" },
-  ];
+  const { content } = useSiteContent();
+  const { title, paragraph1, paragraph2, features, avatarEmoji } = content.about;
+
+  const getFeatureIcon = (index: number) => {
+    switch (index % 4) {
+      case 0:
+        return <FaCheckCircle />;
+      case 1:
+        return <FaHeart />;
+      case 2:
+        return <FaShieldAlt />;
+      case 3:
+      default:
+        return <FaStar />;
+    }
+  };
 
   return (
     <section id="about" className="about">
@@ -15,28 +26,19 @@ export const About = () => {
         <div className="about-grid">
           <div className="about-image">
             <div className="about-image-placeholder">
-              <span>👩‍🎨</span>
+              <span>{avatarEmoji || "👩‍🎨"}</span>
             </div>
           </div>
           <div className="about-content">
             <h2 className="section-title" style={{ textAlign: "left" }}>
-              Обо мне
+              {title}
             </h2>
-            <p className="about-text">
-              Привет! Меня зовут Алина, я профессиональный мастер маникюра и
-              педикюра. Моя страсть — создавать красоту и дарить уверенность
-              каждой женщине.
-            </p>
-            <p className="about-text">
-              Я постоянно совершенствую свои навыки, прохожу мастер-классы и
-              слежу за новейшими трендами в нейл-индустрии. Для меня важно,
-              чтобы каждая клиентка чувствовала себя особенной и уходила с
-              отличным настроением.
-            </p>
+            <p className="about-text">{paragraph1}</p>
+            <p className="about-text">{paragraph2}</p>
             <ul className="about-features">
               {features.map((feat, index) => (
-                <li key={index}>
-                  <span className="feature-icon">{feat.icon}</span>
+                <li key={feat.id || index}>
+                  <span className="feature-icon">{getFeatureIcon(index)}</span>
                   {feat.text}
                 </li>
               ))}
@@ -47,4 +49,5 @@ export const About = () => {
     </section>
   );
 };
+
 

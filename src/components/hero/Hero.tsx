@@ -1,10 +1,14 @@
 import "./Hero.css";
+import { useSiteContent } from "../../context/SiteContentContext";
 
 interface HeroProps {
   onOpenPalette?: () => void;
 }
 
 export const Hero = ({ onOpenPalette }: HeroProps) => {
+  const { content } = useSiteContent();
+  const hero = content.hero;
+
   const scrollToContacts = () => {
     const element = document.getElementById("contacts");
     if (element) {
@@ -16,18 +20,15 @@ export const Hero = ({ onOpenPalette }: HeroProps) => {
     <section id="home" className="hero">
       <div className="hero-container">
         <div className="hero-content">
-          <div className="hero-badge">✨ Профессиональный мастер</div>
+          <div className="hero-badge">{hero.badge}</div>
           <h1 className="hero-title">
-            Идеальный маникюр <br />
-            <span>для ваших рук</span>
+            {hero.titleLine1} <br />
+            <span>{hero.titleLine2}</span>
           </h1>
-          <p className="hero-description">
-            Создаю неповторимый дизайн ногтей с любовью к деталям.
-            Индивидуальный подход и стерильность — мой главный принцип.
-          </p>
+          <p className="hero-description">{hero.description}</p>
           <div className="hero-buttons">
             <button onClick={scrollToContacts} className="btn-primary">
-              Записаться
+              {hero.btnBookText || "Записаться"}
             </button>
             {onOpenPalette && (
               <button
@@ -41,7 +42,7 @@ export const Hero = ({ onOpenPalette }: HeroProps) => {
                 }}
                 onClick={onOpenPalette}
               >
-                <span>Палитра цветов</span>
+                <span>{hero.btnPaletteText || "Палитра цветов"}</span>
                 <span style={{
                   background: "var(--primary)",
                   padding: "2px 6px",
@@ -58,34 +59,35 @@ export const Hero = ({ onOpenPalette }: HeroProps) => {
                 if (element) element.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Смотреть работы
+              {hero.btnPortfolioText || "Смотреть работы"}
             </button>
           </div>
 
           <div className="hero-stats">
             <div className="stat">
-              <span className="stat-number">3+</span>
-              <span className="stat-label">года опыта</span>
+              <span className="stat-number">{hero.statYears}</span>
+              <span className="stat-label">{hero.statYearsLabel}</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat">
-              <span className="stat-number">100+</span>
-              <span className="stat-label">довольных клиентов</span>
+              <span className="stat-number">{hero.statClients}</span>
+              <span className="stat-label">{hero.statClientsLabel}</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat">
-              <span className="stat-number">100%</span>
-              <span className="stat-label">стерильность</span>
+              <span className="stat-number">{hero.statSterility}</span>
+              <span className="stat-label">{hero.statSterilityLabel}</span>
             </div>
           </div>
         </div>
         <div className="hero-image">
           <div className="hero-image-placeholder">
-            <span>💅</span>
+            <span>{hero.avatarEmoji || "💅"}</span>
           </div>
         </div>
       </div>
     </section>
   );
 };
+
 

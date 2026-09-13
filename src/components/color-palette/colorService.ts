@@ -22,8 +22,9 @@ export const colorService = {
           .order("created_at", { ascending: false });
 
         if (!error && data) {
-          if (data.length > 0) {
-            return data as NailColor[];
+          const actualColors = data.filter((item) => !item.id?.startsWith("__"));
+          if (actualColors.length > 0) {
+            return actualColors as NailColor[];
           }
           // Если таблица создана, но пуста - авто-заполняем ее стартовыми оттенками
           try {
